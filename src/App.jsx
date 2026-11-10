@@ -1,37 +1,88 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import schoolLogo from './assets/kando.jpg'
-import './App.css'
+import { useEffect, useState } from "react";
+import "./App.css";
+import axios from "axios";
 
 export const App = () => {
-  const [count, setCount] = useState(0)
+  const [chess, setChess] = useState([]);
+  const [car, setCar] = useState([]);
+  const [hiba, setHiba] = useState("");
+  const [id, setId] = useState(null);
+  //sakk lekeres async awaitel
+  const sakkBetoltes = async () => {
+    try {
+      const response = await axios.get("https://chess.sulla.hu/chess");
+      setChess(response.data);
+    } catch (error) {
+      console.error("Error fetching chess data:", error);
+    }
+  };
+
+  sakkBetoltes();
+
+  //auto lekerese iife-vel
+  function handleCarId(e) {
+    e.preventDefault();
+    const Id = e.currentTarget.elements.idInput.value;
+    console.log("Fetching car data for ID:", Id);
+
+    (async () => {
+      setCar([]);
+      setHiba("");
+
+      try {
+        const response = await axios.get(`https://cars.sulla.hu/cars/${Id}`);
+        setCar([response.data]);
+      } catch (error) {
+        setHiba("Hiba történt az autó lekérése során.");
+      }
+    })();
+  }
 
   return (
     <>
       <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-        <a href="https://www.kkszki.hu" target="_blank"><img src={schoolLogo} alt="Iskola logó" width="200" /></a>
+        {chess.map((item) => (
+          <div className="chessItem" key={item.id}>
+            <div>
+              <h2>{item.name}</h2>
+              <p>Megnyert világbajnokság: {item.world_ch_won}</p>
+              <p>Születési dátum: {item.birth_date}</p>
+              <p>
+                Profil oldal:{" "}
+                <a
+                  href={item.profile_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {item.profile_url}
+                </a>
+              </p>
+            </div>
+            <div>
+              <img src={item.image_url} alt={item.name} />
+            </div>
+            <hr />
+          </div>
+        ))}
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          a számláló állása: {count}
-        </button>
-        <p>
-          Módosítsd az <code>src/App.jsx</code>-t és mentsd le, hogy tesztelhesd a HMR-t!
-        </p>
-      </div>
-      <p className="read-the-docs">
-         Kattints a React, a Kandó, vagy a Vite logókra, további információkért!
-      </p>
+      <form onSubmit={handleCarId}>
+        <label>
+          Autó Id: <input name="idInput" type="number" />{" "}
+        </label>
+        <button type="submit">Autó keresése</button>
+      </form>
+      {hiba ? (
+        <p>{hiba}</p>
+      ) : (
+        car.map((item) => (
+          <div className="carItem" key={item.id}>
+            <h2>Típus: {item.car_name}</h2>
+            <p>Szín: {item.car_color}</p>
+          </div>
+        ))
+      )}
     </>
-  )
-}
+  );
+};
 
-export default App
+export default App;

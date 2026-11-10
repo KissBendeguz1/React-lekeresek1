@@ -2,7 +2,6 @@
   max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
-  text-align: center;
 }
 
 .logo {
@@ -11,6 +10,28 @@
   will-change: filter;
   transition: filter 300ms;
 }
+.chessItem {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin: 1rem;
+}
+
+.chessItem img {
+  width: auto;
+  height: 200px;
+  margin-right: 1rem;
+  margin-left: 5rem;
+}
+
+.carItem img {
+  display: block;
+  max-width: 100%;
+  max-height: 300px;
+  object-fit: contain;
+}
+
+  
 .logo:hover {
   filter: drop-shadow(0 0 2em #646cffaa);
 }
